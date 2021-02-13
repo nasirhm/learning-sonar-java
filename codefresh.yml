@@ -5,6 +5,8 @@ stages:
   - test
   - push
 steps:
+  # Cloning the Repository
+  # Can be used to get other Repositories in the Docker volume too
   main_clone:
     title: Cloning main repository...
     stage: prepare
@@ -12,6 +14,26 @@ steps:
     repo: 'nasirhm/learning-sonar-java'
     revision: main
     git: github
+
+  PrintFileList:
+    title: 'Listing files'
+    image: alpine:latest
+    stage: prepare
+    commands:
+      - 'ls -l'
+      - 'pwd'
+
+  # Building the Application with Gradle
+  # TODO: Figure out a way to store the image tag (without ENV variable)
+  BuildApplication:
+    title: Building Application with Gradle
+    stage: build
+    type: freestyle
+    image: gradle:6.8.2-jdk15
+    commands:
+      - 'gradle --no-daemon build'
+
+  # Building the Docker Image from a Dockerfile in the current volume
   BuildingDockerImage:
     title: Building Docker Image
     stage: build
@@ -20,38 +42,30 @@ steps:
     working_directory: ./
     tag: 'multi-stage'
     dockerfile: Dockerfile
-  BuildApplication:
-    title: Building Application with Gradle
-    stage: build
-    type: freestyle
-    image: gradle:6.8.2-jdk15
-    commands:
-      - 'gradle build'
+
+  # Testing Application with Gradle
   TestApplication:
     title: Testing the Application with Gradle
     stage: test
     image: gradle:6.8.2-jdk15
     commands:
-      - 'gradle test'
-  PrintFileList:
-    title: 'Listing files'
-    image: alpine:latest
-    stage: prepare
-    commands:
-      - 'ls -l'
-      - 'pwd'
+      - 'gradle --no-daemon test'
+
+  # Using SonarCloud for SonarQube
   sonarqube:
     type: "sonar-scanner-cli"
     stage: "push"
     arguments:
-      SONAR_HOST_URL: 'https://sonarcloud.io' # replace with your host url
-      SONAR_LOGIN: "${{SONAR_TOKEN}}" # replace with your access token
-      SONAR_PROJECT_BASE_DIR: "/codefresh/volume/${{CF_REPO_NAME}}" #replace with your working directory
+      SONAR_HOST_URL: 'https://sonarcloud.io'
+      SONAR_LOGIN: "${{SONAR_TOKEN}}"
+      SONAR_PROJECT_BASE_DIR: "/codefresh/volume/${{CF_REPO_NAME}}"
       SONAR_SCANNER_CLI_VERSION: "latest"
-  nexus:
+
+  # JFrog Nexus
+  artifactory:
     title: 'Publishing the Artifact'
     type: "freestyle"
     stage: "push"
     image: gradle:6.8.2-jdk15
     commands:
-      - 'gradle ArtifactoryPublish -Partifactory_user=${{ARTIFACTORY_USERNAME}} -Partifactory_password=${{ARTIFACTORY_PASSWORD}} -Partifactory_url=${{ARTIFACTORY_URL}}'
+      - 'gradle --no-daemon ArtifactoryPublish -Partifactory_user=${{ARTIFACTORY_USERNAME}} -Partifactory_password=${{ARTIFACTORY_PASSWORD}} -Partifactory_url=${{ARTIFACTORY_URL}}'
