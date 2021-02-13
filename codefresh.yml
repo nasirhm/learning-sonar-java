@@ -39,3 +39,9 @@ steps:
       SONAR_LOGIN: "${{SONAR_TOKEN}}" # replace with your access token
       SONAR_PROJECT_BASE_DIR: "/codefresh/volume/${{CF_REPO_NAME}}" #replace with your working directory
       SONAR_SCANNER_CLI_VERSION: "latest"
+  nexus:
+    type: "freestyle"
+    stage: "push"
+    image: gradle:6.8.2-jdk15
+    commands:
+      - 'gradle ArtifactoryPublish -Partifactory_user=${{ARTIFACTORY_USERNAME}} -Partifactory_password=${{ARTIFACTORY_PASSWORD}} -Partifactory_url=${{ARTIFACTORY_URL}}'

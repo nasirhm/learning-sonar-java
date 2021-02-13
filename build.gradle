@@ -3,7 +3,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id "org.sonarqube" version "3.0"
+	id "com.jfrog.artifactory" version "4.20.0"
 }
+
+
 
 group = 'com.nasirhm'
 version = '0.0.1-SNAPSHOT'
@@ -11,6 +14,8 @@ sourceCompatibility = '15'
 
 repositories {
 	mavenCentral()
+	google()
+	jcenter()
 }
 
 dependencies {
@@ -21,4 +26,33 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+artifactory {
+	clientConfig.setIncludeEnvVars(true)
+	clientConfig.info.addEnvironmentProperty('test.adding.dynVar',new Date().toString())
+
+	contextUrl = "${artifactory_url}"
+	publish {
+		repository {
+			repoKey = 'libs-snapshot-local' // The Artifactory repository key to publish to
+			username = "${artifactory_user}" // The publisher user name
+			password = "${artifactory_password}" // The publisher password
+			// This is an optional section for configuring Ivy publication (when publishIvy = true).
+			ivy {
+				ivyLayout = '[organization]/[module]/ivy-[revision].xml'
+				artifactLayout = '[organization]/[module]/[revision]/[module]-[revision](-[classifier]).[ext]'
+				mavenCompatible = true //Convert any dots in an [organization] layout value to path separators, similar to Maven's groupId-to-path conversion. True if not specified
+			}
+		}
+		defaults {
+			// Reference to Gradle publications defined in the build script.
+			// This is how we tell the Artifactory Plugin which artifacts should be
+			// published to Artifactory.
+			publishArtifacts = true
+			// Properties to be attached to the published artifacts.
+			properties = ['qa.level': 'basic', 'dev.team' : 'core']
+			publishPom = true // Publish generated POM files to Artifactory (true by default)
+		}
+	}
 }
