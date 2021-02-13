@@ -8,7 +8,7 @@ steps:
     stage: prepare
     type: git-clone
     repo: 'nasirhm/learning-sonar-java'
-    revision: master
+    revision: main
     git: github
   BuildingDockerImage:
     title: Building Docker Image
