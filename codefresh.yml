@@ -40,6 +40,7 @@ steps:
       SONAR_PROJECT_BASE_DIR: "/codefresh/volume/${{CF_REPO_NAME}}" #replace with your working directory
       SONAR_SCANNER_CLI_VERSION: "latest"
   nexus:
+    title: 'Publishing the Artifact'
     type: "freestyle"
     stage: "push"
     image: gradle:6.8.2-jdk15
