@@ -2,6 +2,7 @@ version: '1.0'
 stages:
   - prepare
   - build
+  - test
   - push
 steps:
   main_clone:
@@ -11,14 +12,14 @@ steps:
     repo: 'nasirhm/learning-sonar-java'
     revision: main
     git: github
-#  BuildingDockerImage:
-#    title: Building Docker Image
-#    stage: build
-#    type: build
-#    image_name: learning-sonar-java
-#    working_directory: ./
-#    tag: 'multi-stage'
-#    dockerfile: Dockerfile
+  BuildingDockerImage:
+    title: Building Docker Image
+    stage: build
+    type: build
+    image_name: learning-sonar-java
+    working_directory: ./
+    tag: 'multi-stage'
+    dockerfile: Dockerfile
   BuildApplication:
     title: Building Application with Gradle
     stage: build
@@ -26,9 +27,16 @@ steps:
     image: gradle:6.8.2-jdk15
     commands:
       - 'gradle build'
+  TestApplication:
+    title: Testing the Application with Gradle
+    stage: test
+    image: gradle:6.8.2-jdk15
+    commands:
+      - 'gradle test'
   PrintFileList:
     title: 'Listing files'
     image: alpine:latest
+    stage: prepare
     commands:
       - 'ls -l'
       - 'pwd'
