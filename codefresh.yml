@@ -18,6 +18,13 @@ steps:
 #    working_directory: ./
 #    tag: 'multi-stage'
 #    dockerfile: Dockerfile
+  BuildApplication:
+    title: Building Application with Gradle
+    stage: build
+    type: freestyle
+    image: gradle:6.8.2-jdk15
+    commands:
+      - 'gradle build'
   PrintFileList:
     title: 'Listing files'
     image: alpine:latest
