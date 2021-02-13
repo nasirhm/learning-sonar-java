@@ -10,14 +10,14 @@ steps:
     repo: 'nasirhm/learning-sonar-java'
     revision: main
     git: github
-  BuildingDockerImage:
-    title: Building Docker Image
-    stage: build
-    type: build
-    image_name: learning-sonar-java
-    working_directory: ./
-    tag: 'multi-stage'
-    dockerfile: Dockerfile
+#  BuildingDockerImage:
+#    title: Building Docker Image
+#    stage: build
+#    type: build
+#    image_name: learning-sonar-java
+#    working_directory: ./
+#    tag: 'multi-stage'
+#    dockerfile: Dockerfile
   PrintFileList:
     title: 'Listing files'
     image: alpine:latest
