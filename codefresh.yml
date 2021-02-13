@@ -29,5 +29,5 @@ steps:
     arguments:
       SONAR_HOST_URL: 'https://sonarcloud.io/' # replace with your host url
       SONAR_LOGIN: "${{SONAR_TOKEN}}" # replace with your access token
-      SONAR_PROJECT_BASE_DIR: "/codefresh/volume/${{}}" #replace with your working directory
+      SONAR_PROJECT_BASE_DIR: "." #replace with your working directory
       SONAR_SCANNER_CLI_VERSION: "latest"
