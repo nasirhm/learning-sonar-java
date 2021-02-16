@@ -69,3 +69,7 @@ steps:
     image: gradle:6.8.2-jdk15
     commands:
       - 'gradle --no-daemon ArtifactoryPublish -Partifactory_user=${{ARTIFACTORY_USERNAME}} -Partifactory_password=${{ARTIFACTORY_PASSWORD}} -Partifactory_url=${{ARTIFACTORY_URL}}'
+    when:
+      branch:
+        only:
+          - gradle
