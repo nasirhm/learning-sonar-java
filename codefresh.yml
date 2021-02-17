@@ -31,7 +31,7 @@ steps:
     type: freestyle
     image: gradle:6.8.2-jdk15
     commands:
-      - 'gradle --no-daemon build'
+      - 'gradle --no-daemon -g /codefresh/volume/.gradle -Dmaven.repo.local=/codefresh/volume/m2 build'
 
   # Building the Docker Image from a Dockerfile in the current volume
   BuildingDockerImage:
